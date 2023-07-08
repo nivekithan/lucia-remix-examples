@@ -8,5 +8,5 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export async function loader() {
-  return redirect("/email_verification");
+  return redirect("/email_verification_2");
 }
