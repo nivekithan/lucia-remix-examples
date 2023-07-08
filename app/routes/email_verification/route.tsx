@@ -1,5 +1,9 @@
 import { json, type LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, type V2_MetaFunction } from "@remix-run/react";
+
+export function meta(): ReturnType<V2_MetaFunction> {
+  return [{ title: "Email Verification | Lucia Auth" }];
+}
 
 export async function loader({ request }: LoaderArgs) {
   const userId = null;
