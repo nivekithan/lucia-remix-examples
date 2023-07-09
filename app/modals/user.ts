@@ -3,6 +3,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 export const user = sqliteTable("auth_user", {
   id: text("id").primaryKey(),
   verified: integer("verified", { mode: "boolean" }),
+  email: text("email").notNull(),
 });
 
 export const session = sqliteTable("auth_session", {

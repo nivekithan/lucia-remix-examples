@@ -18,6 +18,7 @@ export const auth = lucia({
     return {
       userId: userData.id,
       verified: Boolean(userData.verified),
+      email: userData.email,
     };
   },
   middleware: web(),

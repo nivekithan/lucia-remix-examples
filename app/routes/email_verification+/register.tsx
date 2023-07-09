@@ -94,13 +94,14 @@ export async function action({ request }: ActionArgs) {
       primaryKey: { providerId: "email", providerUserId: email, password },
       attributes: {
         verified: boolToNum(false),
+        email: email,
       },
     });
 
     return json({
       status: "account_created",
       formSubmission: submission,
-      email: createdUser.userId,
+      email: createdUser.email,
     } as const);
   }
 
