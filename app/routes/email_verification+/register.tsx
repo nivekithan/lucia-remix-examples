@@ -6,18 +6,37 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "~/components/ui/card";
 import { InlineLink } from "~/components/ui/inlinLink";
 import { useForm, conform } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { json, type ActionArgs, redirect } from "@remix-run/node";
+import {
+  json,
+  type ActionArgs,
+  redirect,
+  type LoaderArgs,
+} from "@remix-run/node";
 import { getActionFromFormData } from "~/lib/forms";
-import { boolToNum, invariantResponse } from "~/lib/utils";
+import { boolToNum, invariantResponse, isValidAction } from "~/lib/utils";
 import { Field } from "~/components/form";
 import { z } from "zod";
 import { auth } from "~/lib/db.server";
 import { LuciaError } from "lucia-auth";
+
+export async function loader({ request }: LoaderArgs) {
+  const headers = new Headers();
+  const authRequest = auth.handleRequest(request, headers);
+
+  const validation = await authRequest.validateUser();
+
+  const isLoggedIn = validation.session && (await validation.user);
+
+  if (isLoggedIn) {
+    return redirect("/email_verification", { headers });
+  }
+
+  return json(null, { headers });
+}
 
 const RegisterForEmailSchema = z.object({
   email: z
@@ -35,16 +54,27 @@ const ACTIONS = {
 } as const;
 
 export async function action({ request }: ActionArgs) {
+  const headers = new Headers();
+  const authRequest = auth.handleRequest(request, headers);
+
+  const validation = await authRequest.validateUser();
+
+  const isUserLoggedIn = validation.session && (await validation.user);
+
+  if (isUserLoggedIn) {
+    return redirect("/email_verification", { headers });
+  }
+
   const formdata = await request.formData();
 
   const action = getActionFromFormData(formdata);
 
-  invariantResponse(action, `Action is required`);
-  invariantResponse(action in ACTIONS, `Invalid actions`);
+  invariantResponse(action, `Action is required`, { headers });
+  invariantResponse(isValidAction(action, ACTIONS), `Invalid actions`, {
+    headers,
+  });
 
-  const validAction = action as keyof typeof ACTIONS;
-
-  if (validAction === "register") {
+  if (action === "register") {
     const submission = await parse(formdata, {
       schema: (intent) => {
         /**
@@ -84,7 +114,13 @@ export async function action({ request }: ActionArgs) {
     const createUser = submission.intent === "submit" && submission.value;
 
     if (!createUser) {
-      return json({ status: "error", formSubmission: submission } as const);
+      return json(
+        {
+          status: submission.value ? "ok" : "error",
+          formSubmission: submission,
+        } as const,
+        { headers }
+      );
     }
 
     const email = createUser.email;
@@ -98,19 +134,18 @@ export async function action({ request }: ActionArgs) {
       },
     });
 
-    return json({
-      status: "account_created",
-      formSubmission: submission,
-      email: createdUser.email,
-    } as const);
+    const session = await auth.createSession(createdUser.userId);
+
+    authRequest.setSession(session);
+
+    return redirect("/email_verification", { headers });
   }
 
-  return redirect(request.url);
+  return redirect(request.url, { headers });
 }
 export default function RegisterEmailVerification() {
   const actionData = useActionData<typeof action>();
 
-  const accountCreated = actionData?.status === "account_created";
   const lastSubmission = actionData?.formSubmission;
 
   const [form, { email, password }] = useForm({
@@ -144,15 +179,17 @@ export default function RegisterEmailVerification() {
             inputProps={{ type: "password", ...conform.input(password) }}
             error={password.errors}
           />
-          <input type="text" name="action" defaultValue="register" hidden />
+          <input
+            type="text"
+            name="action"
+            defaultValue={ACTIONS.register}
+            hidden
+          />
           <Button type="submit" size="lg">
             Create new account
           </Button>
         </Form>
       </CardContent>
-      <CardFooter>
-        {accountCreated ? `Account with email ${actionData.email}` : null}
-      </CardFooter>
     </Card>
   );
 }

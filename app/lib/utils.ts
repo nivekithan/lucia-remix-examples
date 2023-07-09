@@ -61,3 +61,10 @@ export function invariantResponse(
 export function boolToNum(bool: boolean) {
   return bool ? 1 : 0;
 }
+
+export function isValidAction<ValidActions extends string>(
+  action: string,
+  validActions: { [K in ValidActions]: K }
+): action is ValidActions {
+  return Object.keys(validActions).includes(action);
+}
