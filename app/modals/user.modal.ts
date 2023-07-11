@@ -24,3 +24,11 @@ export const key = sqliteTable("auth_key", {
   hashedPassword: text("hashed_password"),
   expires: integer("expires"),
 });
+
+export const anonymousSession = sqliteTable("auth_anonymous_session", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull(),
+  hashedPassword: text("hashed_password").notNull(),
+  expiresInSec: integer("expires_in_sec").notNull(),
+  token: text("token").notNull(),
+});
