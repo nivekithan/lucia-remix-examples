@@ -10,11 +10,15 @@ import {
 import { InlineLink } from "~/components/ui/inlinLink";
 import { useForm, conform } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type ActionArgs, type LoaderArgs } from "@remix-run/node";
+import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
 import { Field } from "~/components/form";
 import { z } from "zod";
+import { getUser } from "~/auth/auth";
+import { BAD_REQUEST } from "~/lib/statusCode";
 
-export async function loader({ request }: LoaderArgs) {}
+export async function loader({ request }: LoaderArgs) {
+  return null;
+}
 
 const RegisterForEmailSchema = z.object({
   email: z
@@ -31,7 +35,57 @@ const ACTIONS = {
   register: "register",
 } as const;
 
-export async function action({ request }: ActionArgs) {}
+export function generateZodSchema(intent: string) {
+  const actionSchema = z.literal(ACTIONS.register);
+
+  if (intent === "submit") {
+    return z
+      .intersection(z.object({ action: actionSchema }), RegisterForEmailSchema)
+      .superRefine(({ email }, ctx) => {
+        const user = getUser(email);
+
+        if (user) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "There is an user with that email",
+            path: ["email"],
+          });
+          return;
+        }
+
+        return;
+      });
+  } else {
+    return z.intersection(
+      z.object({
+        action: z
+          .union([actionSchema, z.literal("DEFAULT")])
+          .default("DEFAULT"),
+      }),
+      RegisterForEmailSchema
+    );
+  }
+}
+
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData();
+
+  const lastSubmission = await parse(formData, {
+    schema: generateZodSchema,
+    acceptMultipleErrors() {
+      return true;
+    },
+    async: true,
+  });
+
+  if (
+    lastSubmission.intent !== "submit" ||
+    !lastSubmission.value ||
+    lastSubmission.value.action === "DEFAULT"
+  ) {
+    return json({ lastSubmission } as const, { status: BAD_REQUEST });
+  }
+}
 
 export default function RegisterEmailVerification() {
   // const actionData = useActionData<typeof action>();

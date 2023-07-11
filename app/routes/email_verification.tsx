@@ -7,10 +7,12 @@ export function meta(): ReturnType<V2_MetaFunction> {
   return [{ title: "Email Verification | Lucia Auth" }];
 }
 
-export async function loader({ request }: LoaderArgs) {}
+export async function loader({ request }: LoaderArgs) {
+  return null;
+}
 
 export default function EmailVerificationOutlet() {
-  const { showLogoutButton } = useLoaderData<typeof loader>();
+  const showLogoutButton = false;
 
   return (
     <main className="container grid place-items-center py-10">

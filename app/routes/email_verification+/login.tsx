@@ -14,7 +14,9 @@ import {
 } from "~/components/ui/card";
 import { InlineLink } from "~/components/ui/inlinLink";
 
-export async function loader({ request }: LoaderArgs) {}
+export async function loader({ request }: LoaderArgs) {
+  return null;
+}
 
 const LoginWithEmailSchema = z.object({
   email: z.string().nonempty("Email is required").email("Provide valid email"),
