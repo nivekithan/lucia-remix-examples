@@ -85,6 +85,14 @@ export function generateZodSchema(intent: string) {
 export async function action({ request }: ActionArgs) {
   const headers = new Headers();
   const authRequest = new AuthRequest(request, headers);
+
+  const session = await authRequest.validateSession();
+
+  if (session) {
+    // Currently an active session is ongoing redirect to homepage
+    return redirect("/email_verification", { headers });
+  }
+
   const formData = await request.formData();
 
   const submission = await parse(formData, {
