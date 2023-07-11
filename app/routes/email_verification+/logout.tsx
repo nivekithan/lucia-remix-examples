@@ -1,44 +1,11 @@
-import {
-  redirect,
-  type LoaderArgs,
-  json,
-  type ActionArgs,
-} from "@remix-run/node";
+import { type LoaderArgs, type ActionArgs } from "@remix-run/node";
 import { Form, Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { Card, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { auth } from "~/lib/db.server";
+import { Card, CardHeader, CardTitle, CardFooter } from "~/components/ui/card";
 
-export async function loader({ request }: LoaderArgs) {
-  const headers = new Headers();
-  const authRequest = auth.handleRequest(request, headers);
+export async function loader({ request }: LoaderArgs) {}
 
-  const validation = await authRequest.validateUser();
-  const isLoggedIn = validation.session && (await validation.user);
-
-  if (!isLoggedIn) {
-    return redirect("/email_verification", { headers });
-  }
-
-  return json(null, { headers });
-}
-
-export async function action({ request }: ActionArgs) {
-  const headers = new Headers();
-  const authRequest = auth.handleRequest(request, headers);
-
-  const validation = await authRequest.validateUser();
-  const isLoggedIn = validation.session && (await validation.user);
-
-  if (!isLoggedIn) {
-    return redirect("/email_verification", { headers });
-  }
-
-  await auth.invalidateSession(validation.session.sessionId);
-  authRequest.setSession(null);
-
-  return json(null, { headers });
-}
+export async function action({ request }: ActionArgs) {}
 
 export default function LogoutPage() {
   return (

@@ -11,9 +11,6 @@ dependencies:
   '@conform-to/zod':
     specifier: ^0.7.2
     version: 0.7.2(@conform-to/dom@0.7.2)(zod@3.21.4)
-  '@lucia-auth/adapter-sqlite':
-    specifier: ^1.1.1
-    version: 1.1.1(better-sqlite3@8.4.0)(lucia-auth@1.8.0)
   '@radix-ui/react-label':
     specifier: ^2.0.2
     version: 2.0.2(@types/react-dom@18.0.11)(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)
@@ -50,9 +47,6 @@ dependencies:
   isbot:
     specifier: ^3.6.8
     version: 3.6.8
-  lucia-auth:
-    specifier: ^1.8.0
-    version: 1.8.0
   lucide-react:
     specifier: ^0.259.0
     version: 0.259.0(react@18.2.0)
@@ -1991,19 +1985,6 @@ packages:
   /@jspm/core@2.0.1:
     resolution: {integrity: sha512-Lg3PnLp0QXpxwLIAuuJboLeRaIhrgJjeuh797QADg3xz8wGLugQOS5DpsE8A6i6Adgzf+bacllkKZG3J0tGfDw==}
     dev: true
-
-  /@lucia-auth/adapter-sqlite@1.1.1(better-sqlite3@8.4.0)(lucia-auth@1.8.0):
-    resolution: {integrity: sha512-u9d1iUcyxZepQ+HXgLMRyIk0E9lTaiQsD7zJNLim/jaK16TWmchS68cIbAF1m+Z9rFkVFinNmWXPcA620xUmXg==}
-    peerDependencies:
-      better-sqlite3: ^8.0.0
-      lucia-auth: ^1.4.0
-    peerDependenciesMeta:
-      better-sqlite3:
-        optional: true
-    dependencies:
-      better-sqlite3: 8.4.0
-      lucia-auth: 1.8.0
-    dev: false
 
   /@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1:
     resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
@@ -5731,10 +5712,6 @@ packages:
     dependencies:
       es5-ext: 0.10.62
     dev: true
-
-  /lucia-auth@1.8.0:
-    resolution: {integrity: sha512-zI8gT2AOpxTPIxYzToEdgoht+GOflrduZiHPsOEmg4/2pThOyCW3o3lXh+Uwh20tJ9QoXwQe9/Omn6PlUG6efw==}
-    dev: false
 
   /lucide-react@0.259.0(react@18.2.0):
     resolution: {integrity: sha512-dFBLc6jRDfcpD9NQ7NyFVa+YR3RHX6+bs+f/UiotvNPho+kd4WyeXWMCCchUf7i/pq3BAaHkbmtkbx/GxxHVUw==}

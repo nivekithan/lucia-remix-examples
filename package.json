@@ -13,7 +13,6 @@
   "dependencies": {
     "@conform-to/react": "^0.7.2",
     "@conform-to/zod": "^0.7.2",
-    "@lucia-auth/adapter-sqlite": "^1.1.1",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@remix-run/css-bundle": "^1.18.1",
@@ -26,7 +25,6 @@
     "clsx": "^1.2.1",
     "drizzle-orm": "^0.27.0",
     "isbot": "^3.6.8",
-    "lucia-auth": "^1.8.0",
     "lucide-react": "^0.259.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
