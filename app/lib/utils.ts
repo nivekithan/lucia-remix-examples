@@ -72,3 +72,7 @@ export function isValidAction<ValidActions extends string>(
 export function getCurrentTimeInSec() {
   return Math.floor(new Date().getTime() / 1000);
 }
+
+export function isPast(timeInSec: number) {
+  return getCurrentTimeInSec() >= timeInSec;
+}

@@ -2,9 +2,8 @@ import { type InferModel } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const authUser = sqliteTable("auth_user", {
-  id: text("id").primaryKey(),
-  verified: integer("verified", { mode: "boolean" }),
-  email: text("email").notNull(),
+  id: text("id").notNull(),
+  email: text("email"),
 });
 
 export type AuthUser = InferModel<typeof authUser, "select">;
@@ -34,6 +33,7 @@ export const anonymousSession = sqliteTable("auth_anonymous_session", {
   hashedPassword: text("hashed_password").notNull(),
   expiresInSec: integer("expires_in_sec").notNull(),
   token: text("token").notNull(),
+  type: text("type").notNull().default("anon"),
 });
 
 export type AuthAnonSession = InferModel<typeof anonymousSession, "select">;

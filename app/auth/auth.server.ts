@@ -7,8 +7,8 @@ import {
   type AuthAnonSession,
 } from "~/modals/user.modal";
 import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
-import { getCurrentTimeInSec } from "~/lib/utils";
+import { and, eq } from "drizzle-orm";
+import { getCurrentTimeInSec, isPast } from "~/lib/utils";
 import { ANON_SESSION_EXPIRE_TIME_SEC } from "./constant";
 
 export async function createAnonymousSession({
@@ -75,3 +75,32 @@ export function deleteAnonSession(sessionId: string) {
 
   return session;
 }
+
+export function verifyToken(
+  token: string,
+  email: string
+): AuthAnonSession | undefined {
+  const session = db
+    .select()
+    .from(anonymousSession)
+    .where(
+      and(eq(anonymousSession.token, token), eq(anonymousSession.email, email))
+    )
+    .get();
+
+  if (!session) {
+    return;
+  }
+
+  const expires = session.expiresInSec;
+
+  const isExpired = isPast(expires);
+
+  if (isExpired) {
+    return;
+  }
+
+  return session;
+}
+
+export function upgradeAnonToUserSession(email: string, passwordHash: string) {}

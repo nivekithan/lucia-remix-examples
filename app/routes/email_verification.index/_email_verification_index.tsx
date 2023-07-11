@@ -1,4 +1,5 @@
 import { redirect, type LoaderArgs, json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { AuthRequest } from "~/auth/request.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -12,9 +13,19 @@ export async function loader({ request }: LoaderArgs) {
     return redirect("/email_verification/register", { headers });
   }
 
-  return json(null, { headers });
+  const isAnonSession = session.type === "anon";
+
+  return json({ isAnonSession }, { headers });
 }
 
 export default function EmailVerificationHomePage() {
-  return <h1>Hello there authenticated user</h1>;
+  const { isAnonSession } = useLoaderData<typeof loader>();
+
+  return (
+    <p>
+      {isAnonSession
+        ? "Verify your email to continue"
+        : "Hello there authenticated user"}
+    </p>
+  );
 }
