@@ -3,6 +3,8 @@ import { db } from "~/lib/db.server";
 import { type AuthUser, anonymousSession, authUser } from "~/modals/user.modal";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
+import { getCurrentTimeInSec } from "~/lib/utils";
+import { ANON_SESSION_EXPIRE_TIME_SEC } from "./constant";
 
 export async function createAnonymousSession({
   email,
@@ -14,9 +16,7 @@ export async function createAnonymousSession({
   token: string;
 }) {
   const hashedPassword = await hashPassword(password);
-  const expires = Math.floor(
-    new Date(new Date().getTime() + 1000 * 60 * 60).getTime() / 1000
-  );
+  const expires = getCurrentTimeInSec() + ANON_SESSION_EXPIRE_TIME_SEC;
 
   const createdSession = db
     .insert(anonymousSession)
@@ -56,6 +56,16 @@ export function getAnonSession(sessionId: string) {
     .select()
     .from(anonymousSession)
     .where(eq(anonymousSession.id, sessionId))
+    .get();
+
+  return session;
+}
+
+export function deleteAnonSession(sessionId: string) {
+  const session = db
+    .delete(anonymousSession)
+    .where(eq(anonymousSession.id, sessionId))
+    .returning()
     .get();
 
   return session;

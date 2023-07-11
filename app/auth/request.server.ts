@@ -1,8 +1,9 @@
-import { getAnonSession } from "./auth.server";
+import { deleteAnonSession, getAnonSession } from "./auth.server";
 import { DEFAULT_COOKIE_NAME } from "./constant";
 import { parse, serialize } from "cookie";
 import { signCookieValue, unsignCookieValue } from "./cookies.server";
 import { env } from "~/lib/env.server";
+import { getCurrentTimeInSec } from "~/lib/utils";
 
 export class AuthRequest {
   #request: Request;
@@ -73,6 +74,12 @@ export class AuthRequest {
     }
 
     const session = getAnonSession(sessionId);
+
+    if (session.expiresInSec <= getCurrentTimeInSec()) {
+      // Session has expired
+      deleteAnonSession(sessionId);
+      return;
+    }
 
     return session;
   }

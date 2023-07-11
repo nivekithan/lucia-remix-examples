@@ -68,3 +68,7 @@ export function isValidAction<ValidActions extends string>(
 ): action is ValidActions {
   return Object.keys(validActions).includes(action);
 }
+
+export function getCurrentTimeInSec() {
+  return Math.floor(new Date().getTime() / 1000);
+}
