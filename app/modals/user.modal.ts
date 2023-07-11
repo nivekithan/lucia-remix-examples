@@ -35,3 +35,5 @@ export const anonymousSession = sqliteTable("auth_anonymous_session", {
   expiresInSec: integer("expires_in_sec").notNull(),
   token: text("token").notNull(),
 });
+
+export type AuthAnonSession = InferModel<typeof anonymousSession, "select">;

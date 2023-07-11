@@ -41,6 +41,9 @@ dependencies:
   clsx:
     specifier: ^1.2.1
     version: 1.2.1
+  cookie:
+    specifier: ^0.5.0
+    version: 0.5.0
   drizzle-orm:
     specifier: ^0.27.0
     version: 0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)
@@ -82,12 +85,21 @@ devDependencies:
   '@types/better-sqlite3':
     specifier: ^7.6.4
     version: 7.6.4
+  '@types/cookie':
+    specifier: ^0.5.1
+    version: 0.5.1
+  '@types/cookie-signature':
+    specifier: ^1.1.0
+    version: 1.1.0
   '@types/react':
     specifier: ^18.0.35
     version: 18.0.35
   '@types/react-dom':
     specifier: ^18.0.11
     version: 18.0.11
+  cookie-signature:
+    specifier: ^1.2.1
+    version: 1.2.1
   drizzle-kit:
     specifier: ^0.19.3
     version: 0.19.3
@@ -2424,8 +2436,18 @@ packages:
       '@types/responselike': 1.0.0
     dev: true
 
+  /@types/cookie-signature@1.1.0:
+    resolution: {integrity: sha512-6/OwJHoeGW5taC2vWq1sz8X7/T2rAPVXj3zQds+rM4b5VrW8lgpYjpDVjTJmkRB1IODBCAiuPXNk092CjYlryQ==}
+    dependencies:
+      '@types/node': 20.4.0
+    dev: true
+
   /@types/cookie@0.4.1:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
+
+  /@types/cookie@0.5.1:
+    resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
+    dev: true
 
   /@types/debug@4.1.8:
     resolution: {integrity: sha512-/vPO1EPOs306Cvhwv7KfVfYvOJqA/S/AXjaHQiJboCZzcNDb+TIJFN9/2C9DZ//ijSKWioNyUxD792QmDJ+HKQ==}

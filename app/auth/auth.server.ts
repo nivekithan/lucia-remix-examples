@@ -50,3 +50,13 @@ export function getUser(email: string): AuthUser | undefined {
 
   return user;
 }
+
+export function getAnonSession(sessionId: string) {
+  const session = db
+    .select()
+    .from(anonymousSession)
+    .where(eq(anonymousSession.id, sessionId))
+    .get();
+
+  return session;
+}

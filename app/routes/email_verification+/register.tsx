@@ -10,14 +10,29 @@ import {
 import { InlineLink } from "~/components/ui/inlinLink";
 import { useForm, conform } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
+import {
+  json,
+  type ActionArgs,
+  type LoaderArgs,
+  redirect,
+} from "@remix-run/node";
 import { Field } from "~/components/form";
 import { z } from "zod";
-import { getUser } from "~/auth/auth";
+import { createAnonymousSession, getUser } from "~/auth/auth.server";
 import { BAD_REQUEST } from "~/lib/statusCode";
+import { AuthRequest } from "~/auth/request.server";
 
 export async function loader({ request }: LoaderArgs) {
-  return null;
+  const headers = new Headers();
+  const authRequest = new AuthRequest(request, headers);
+
+  const session = await authRequest.validateSession();
+
+  if (session) {
+    return redirect("/email_verification", { headers });
+  }
+
+  return json(null, { headers });
 }
 
 const RegisterForEmailSchema = z.object({
@@ -68,9 +83,11 @@ export function generateZodSchema(intent: string) {
 }
 
 export async function action({ request }: ActionArgs) {
+  const headers = new Headers();
+  const authRequest = new AuthRequest(request, headers);
   const formData = await request.formData();
 
-  const lastSubmission = await parse(formData, {
+  const submission = await parse(formData, {
     schema: generateZodSchema,
     acceptMultipleErrors() {
       return true;
@@ -79,11 +96,29 @@ export async function action({ request }: ActionArgs) {
   });
 
   if (
-    lastSubmission.intent !== "submit" ||
-    !lastSubmission.value ||
-    lastSubmission.value.action === "DEFAULT"
+    submission.intent !== "submit" ||
+    !submission.value ||
+    submission.value.action === "DEFAULT"
   ) {
-    return json({ lastSubmission } as const, { status: BAD_REQUEST });
+    return json({ lastSubmission: submission } as const, {
+      status: BAD_REQUEST,
+      headers,
+    });
+  }
+
+  const email = submission.value.email;
+  const password = submission.value.password;
+  const action = submission.value.action;
+
+  if (action === ACTIONS.register) {
+    const token = crypto.randomUUID();
+    const { sessionId } = await createAnonymousSession({
+      email,
+      password,
+      token,
+    });
+    await authRequest.setSession(sessionId);
+    return json({ lastSubmission: submission } as const, { headers });
   }
 }
 
