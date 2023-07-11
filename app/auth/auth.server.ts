@@ -1,6 +1,11 @@
 import { hash } from "bcryptjs";
 import { db } from "~/lib/db.server";
-import { type AuthUser, anonymousSession, authUser } from "~/modals/user.modal";
+import {
+  type AuthUser,
+  anonymousSession,
+  authUser,
+  type AuthAnonSession,
+} from "~/modals/user.modal";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { getCurrentTimeInSec } from "~/lib/utils";
@@ -51,7 +56,7 @@ export function getUser(email: string): AuthUser | undefined {
   return user;
 }
 
-export function getAnonSession(sessionId: string) {
+export function getAnonSession(sessionId: string): AuthAnonSession | undefined {
   const session = db
     .select()
     .from(anonymousSession)

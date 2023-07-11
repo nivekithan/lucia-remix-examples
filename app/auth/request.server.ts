@@ -63,17 +63,28 @@ export class AuthRequest {
 
     if (sessionId === null) {
       // User or someone has tampered with cookie
-
       const cookie = serialize(this.#cookieName, "", {
         httpOnly: true,
         path: "/",
         secure: true,
+        expires: new Date(0),
       });
       this.#headers.append("set-cookie", cookie);
       return;
     }
 
     const session = getAnonSession(sessionId);
+
+    if (!session) {
+      const cookie = serialize(this.#cookieName, "", {
+        httpOnly: true,
+        path: "/",
+        secure: true,
+        expires: new Date(0),
+      });
+      this.#headers.append("set-cookie", cookie);
+      return;
+    }
 
     if (session.expiresInSec <= getCurrentTimeInSec()) {
       // Session has expired
